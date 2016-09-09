@@ -224,10 +224,10 @@ def require_oauth(view):
     return authorized_view
 ```
 
-And below is the real app example that use function auth.py , you can see the tiny app at [github](https://github.com/Reimilia/Genetic-Report-Viewer).
+And below is the real app example that use function auth.py , you can see the complete tiny app at [github](https://github.com/Reimilia/Genetic-Report-Viewer).
 
 ```python
-# app.py
+# part of app.py
 from flask import Flask, render_template
 from auth import *
 
@@ -306,90 +306,6 @@ def forward_api(forwarded_url):
 
     return render_fhir(bundle)
 
-
-@app.route('/reports/<path:id>')
-def report_generate(id):
-    '''
-    fetch the instances of observationforgenetics profile, reportforgenetics profile, sequence resource of selected
-    patient. Then select representative genetics info from these instances.
-    '''
-    # initiation
-    source, gene, sequence_refs, obs_value, variation, coordinate, frequency, condition = [], [], [], [], [], [], [], []
-    patient_count = api_call('/Patient?_format=json').get('total')
-    # read the patient instance by id
-    patient = api_call('/Patient/'+id+'?_format=json')
-    # search all the observationforgenetics instance for this patient
-    observations = api_call('/observationforgenetics?subject:Patient='+id+'&_format=json')
-    total = observations.get('total')
-    # search the reportforgenetics for this patient
-    # in this demo app, we assume one patient only has one reportforgenetics instance
-    diagnosticReports = api_call('/reportforgenetics?subject:Patient='+id+'&_format=json')
-    variation_id = None
-    report_extensions = diagnosticReports['entry'][0]['resource']['extension']
-    for extension in report_extensions:
-        if 'Condition' in extension['url']:
-            condition_ref = extension['valueReference']['reference']
-            condition_resource = api_call('/'+condition_ref+'?_format=json')
-            condition.append(condition_resource['code'].get('text'))
-    if len(condition)==0:
-        condition.append('Unknown')
-
-    for observation in observations['entry']:
-        obs_value.append(observation['resource'].get('valueCodeableConcept')['text'])
-        obs_extensions = observation['resource'].get('extension')
-        for i in obs_extensions:
-            if 'Source' in i['url']:
-                source.append(i['valueCodeableConcept'].get('text'))
-            elif 'Gene' in i['url']:
-                gene.append(i['valueCodeableConcept'].get('text'))
-            elif 'Sequence' in i['url']:
-                sequence_refs.append(i['valueReference']['reference'])
-            elif 'VariationId' in i['url']:
-                variation_id = i['valueCodeableConcept'].get('coding')[0].get('code')
-
-    for seq_reference in sequence_refs:
-        sequence = api_call('/'+seq_reference+'?_format=json')
-        print sequence
-        if sequence['type'] not in 'DNA':
-            continue
-        variation.append("%s (observed allele/reference allele is %s/%s)" % (variation_id,
-                                                                             sequence['variant'][0]['observedAllele'],
-                                                                             sequence['variant'][0]['referenceAllele']))
-        coordinate.append("%s : chrom %s (%s ~ %s)" % (sequence['referenceSeq']['genomeBuild'],
-                                                       sequence['referenceSeq']['chromosome'].get('text'),
-                                                       sequence['variant'][0]['start'],
-                                                       sequence['variant'][0]['end']))
-
-        # search for all observationforgenetics instances containing this variant
-        observations_for_this_variation = api_call('/observationforgenetics?Sequence.variationID='+variation_id+'&_format=json').get('entry')
-        subject_id = []
-        # collect all patient having this variant
-        for entry in observations_for_this_variation:
-            id = entry['resource'].get('subject')
-            if id and id not in subject_id:
-                subject_id.append(id)
-        # calculate frequency
-        each_frequency = float(len(subject_id))/patient_count
-        frequency.append(each_frequency)
-
-    # selected info
-    patient_info = {
-                    'name': patient['name'][0]['text'],
-                    'gender': patient['gender'],
-                    'id': patient['id'],
-                    'source': source,
-                    'gene': gene,
-                    'variation': variation,
-                    'coordinate': coordinate,
-                    'total': total,
-                    'status': obs_value,
-                    'condition': condition,
-                    'frequency': frequency
-                    }
-
-    return render_template('patient_info_view_v2.html', **patient_info)
-
-
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
 
@@ -398,15 +314,165 @@ The running result looks like these:
 ![result1](https://drive.google.com/uc?id=0B1Y9kFL5yCVDSTRIdjA3dmg2MlE)
 ![result2](https://drive.google.com/uc?id=0B1Y9kFL5yCVDREViY1Nic253TzA)
 
-We suppose you know the format of file the server will return. If you don't know,  you can check it [here](#Chapter1.3.4). You can also get the idea of how to use RESTful API in this tiny app. But if you want a formal document , see [this](http://hl7.org/fhir/2016Sep/http.html) for a STU3 API format.
+We suppose you know the format of file the server will return. If you don't know,  you can check it [here](#Chapter1.3.4-Data). You can also get the idea of how to use RESTful API in this tiny app. But if you want a formal document , see [this](http://hl7.org/fhir/2016Sep/http.html) for a STU3 API format.
 
 
 <span id = "Chapter1.3.3"><h5>[How to create and submit own data instances](#Content)</h5></span> 
 
+There are two ways to submit a data by yourself.
+
+*	Submit by account. Just Click on 'Submit data' icon when you logged in.
+*	Submit by POST and GET method. See [here](#Chapter1.3.4)
  
+Remember you need to check the format of FHIR resource. The server does not allow illegal resource format to be posted. Also , for the present time, **submit by account is JSON data only**.
 
  <span id = "Chapter1.3.4"><h5>[RESTful API and data recevied from server](#Content)</h5></span>
   
+####API Reference:
+
+The SMART Genomics API is built on top of SMART on FHIR please see [here](http://hl7.org/fhir/2016Sep/http.html) for more information.
+
+Note: The SMART Genomics API supports both XML and JSON formats. Append ?_format= xml|json in HTTP requests to differentiate between the two.
+
+The following operations are defined:
+
+> **read**: Read the current state of the resource
+> 
+> **search**: Search the resource type based on some filter criteria
+> 
+> **update**: Update an existing resource by its id (or create it if it is new)
+> 
+> **create**: Create a new resource with a server assigned id
+> 
+> **delete**: Delete a resource
+> 
+> **history**: Retrieve the update history for a particular resource
+> 
+
+The Service Root URL is the address where all of the resources defined by this interface are found. The Service Root URL takes the form of:
+
+> http:// [server base] /api/resourceType
+
+####Style:
+
+```
+Read
+GET [base]/[type]/[id]
+For example:
+http://localhost:2048/api/Sequence/[id]
+
+Search
+GET [base]/[type]{?[parameters]}
+For example:
+http://localhost:2048/api/Sequence?variationID=[variationID]
+
+Create
+POST [base]/[type]{?_format=json|xml}
+With data submitted
+
+Update
+PUT [base]/[type]{?[parameters]&_format=json|xml}
+With data Submitted
+
+History
+GET [base]/[type]/[id]/_history{?[parameter]}
+http://localhost:2048/api/Sequence/[id]/_history?variationID=[variationID]
+```
+####Sample codes:
+
+All written in python 2.7
+API_BASE = 'http://localhost:2048/api'
+
+####to read data
+```python
+def read(request, url, id):
+  access_token = request.COOKIES['genomic_access_token']
+  resp = requests.get('%s/%s/%s?_format=json'%(API_BASE, url, id),
+			  headers={'Accept': 'application/json','Authorization': 'Bearer %s'% access_token})
+  return resp.json()
+```
+####to create data
+```python
+def create(request, url, data):
+  access_token = request.COOKIES['genomic_access_token']
+  resp = requests.post('%s/orderforgenetics?_format=json'% API_BASE,
+  						data=json.dumps(data),headers={'Authorization': 'Bearer %s'% access_token})
+  return resp.json()
+```
+
+####to update data
+```python
+def read(request, url, id, data):
+  access_token = request.COOKIES['genomic_access_token']
+  resp = requests.put('%s/%s/%s?_format=json'%(API_BASE, url, id),
+  					 data=json.dumps(data),
+			  headers={'Accept': 'application/json','Authorization': 'Bearer %s'% access_token})
+  return resp.json()
+```
+
+####to search data
+```python
+def search(url, args={}):
+  access_token = request.COOKIES['genomic_access_token']
+  args['_format'] = 'json'
+  resp = requests.get('%s%s?%s'% (API_BASE, url, urlencode(args)),
+						headers={'Accept': 'application/json','Authorization': 'Bearer %s'% access_token})
+  return resp.json()
+```
+
+<span id="Chapter1.3.4-Data"></span>
+####Data from Server
+
+Server will return either one specific data (if you point to a specific resource with [base]/[type]/[id] format or the bundled resource (if you are searching or want a list of specific resource type)
+
+####Single instance
+It will basically follow the data as FHIR structure, here is one example:
+```json
+{
+    "patient": {
+        "reference": "Patient/1712718f-3c5b-46e3-9ae1-6e8670276b3d"
+    }, 
+    "resourceType": "Condition", 
+    "verificationStatus": "confirmed", 
+    "code": {
+        "text": "Breast cancer", 
+        "coding": [
+            {
+                "code": "254837009", 
+                "display": "Malignant tumor of breast", 
+                "system": "http://snomed.org/sct"
+            }
+        ]
+    }, 
+    "meta": {
+        "versionID": 1, 
+        "lastUpdated": "2016-08-30T11:08:55.828815"
+    }, 
+    "id": "4f1ddc9e-fdde-44f3-a5fd-26499c206164", 
+    "subject": "Patient"
+}
+```
+
+####bundle result
+It will follow the format like the following example:
+```json
+{
+    "updated": "2016-09-09T16:59:41.181048",
+    "resourceType": "Bundle",
+    "link": [
+        {
+            "href": "http://localhost:2048/api/Patient?_format=json",
+            "rel": "self"
+        }
+    ],
+    "entry": [
+	each element here is  a result
+    ],
+    "total": 21,
+    "type": "searchset",
+    "id": "http://localhost:2048/api/Patient?_format=json"
+}
+```
 
 
 ----------
