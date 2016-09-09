@@ -1,8 +1,12 @@
 #Overview
 
    An implementation guide to a Smart-on-fhir Genomic Sandbox, which includes a python server and the rule on how to create an app that can connect to this back-end server. If you only concern about the apps , you can jump to [How to use this sandbox server with your own web apps](#Chapter1.3) part. Here are some possible public server for you to test:
-   http://ec2-52-43-253-18.us-west-2.compute.amazonaws.com:2048/ (STU3)
-   http://genomics-advisor.smartplatforms.org/ (STU2)
+
+> http://ec2-52-43-253-18.us-west-2.compute.amazonaws.com:2048/ (STU3)
+> http://genomics-advisor.smartplatforms.org/ (DSTU2)
+
+
+
 
 
  <span id = "Content"></span> 
@@ -12,10 +16,11 @@
 	1. [Preliminary Environment Configuration](#Chapter1.1)
 	2. [How to set up and run a server](#Chapter1.2)
 	3. [How to use this sandbox server with your own web apps](#Chapter1.3)
-		a. [How to communicate with server](#Chapter1.3.1)
-		b. [How to create your own app](#Chapter1.3.2)
-		c. [How to create and submit own data instances](#Chapter1.3.3)
-		d. [RESTful API and data recevied from server](#Chapter1.3.4)
+
+		*    [How to communicate with server](#Chapter1.3.1)
+		*    [How to create your own app](#Chapter1.3.2)
+		*    [How to create and submit own data instances](#Chapter1.3.3)
+		*    [RESTful API and data recevied from server](#Chapter1.3.4)
 		
 *	[Topics for developers](#Chapter2)
 	1. Web developing with Flask
