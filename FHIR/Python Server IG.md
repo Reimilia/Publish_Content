@@ -484,11 +484,11 @@ It will follow the format like the following example:
 The format of each resource will follow the specification online. (E.g. [FHIR 1.6.0](http://hl7.org/fhir/2016Sep/sequence.html)) You can check at anytime. Note there exists subtle difference between the resource format from DSTU2 and STU3, and indeed it will bring some difficulties for developer. Indeed the little demo app only applies STU3(FHIR 1.6.0) version. For more infomation about DSTU2 version. Contact at the email [here](#Email). 
 
 ----------
- <span id = "Chapter2"><h3>[Topics for developers](#Content)</h3></span> 
+ <span id = "Chapter2"><h3>[Topics for developers](#content)</h3></span> 
 
 To be continued
 
 ----------
- <span id = "Chapter3"><h3>[Bugs and Issues](#Content)</h3></span> 
+ <span id = "Chapter3"><h3>[Bugs and Issues](#content)</h3></span> 
 
 To be continued
