@@ -19,23 +19,23 @@ If you have any question about this guide, contact at:
 
 ##Contents
 
-*	[Tutorial of Usage](#Chapter1)
-	1. [Preliminary Environment Configuration](#Chapter1.1)
-	2. [How to set up and run a server](#Chapter1.2)
-	3. [How to use this sandbox server with your own web apps](#Chapter1.3)
+*	[Tutorial of Usage](Chapter1)
+	1. [Preliminary Environment Configuration](Chapter1.1)
+	2. [How to set up and run a server](Chapter1.2)
+	3. [How to use this sandbox server with your own web apps](Chapter1.3)
 
-		*    [How to communicate with server](#Chapter1.3.1)
-		*    [How to create your own app](#Chapter1.3.2)
-		*    [How to create and submit own data instances](#Chapter1.3.3)
-		*    [RESTful API and data recevied from server](#Chapter1.3.4)
+		*    [How to communicate with server](Chapter1.3.1)
+		*    [How to create your own app](Chapter1.3.2)
+		*    [How to create and submit own data instances](Chapter1.3.3)
+		*    [RESTful API and data recevied from server](Chapter1.3.4)
 		
-*	[Topics for developers](#Chapter2)
+*	[Topics for developers](Chapter2)
 	1. Web developing with Flask
 	2. How does this server match FHIR datatype
 	3. How does this server check the correctness of the data
 	4. How does this server organize RESTful API
 
-*	[Bugs and Issues](#Chapter3)
+*	[Bugs and Issues](Chapter3)
 	1. Potential bugs
 	2. Developer's Progress Bar
 
@@ -484,11 +484,11 @@ It will follow the format like the following example:
 The format of each resource will follow the specification online. (E.g. [FHIR 1.6.0](http://hl7.org/fhir/2016Sep/sequence.html)) You can check at anytime. Note there exists subtle difference between the resource format from DSTU2 and STU3, and indeed it will bring some difficulties for developer. Indeed the little demo app only applies STU3(FHIR 1.6.0) version. For more infomation about DSTU2 version. Contact at the email [here](#Email). 
 
 ----------
- <span id = "Chapter2"><h3>[Topics for developers](#content)</h3></span> 
+ <span id = "Chapter2"><h3>[Topics for developers](#Content)</h3></span> 
 
 To be continued
 
 ----------
- <span id = "Chapter3"><h3>[Bugs and Issues](#content)</h3></span> 
+ <span id = "Chapter3"><h3>[Bugs and Issues](#Content)</h3></span> 
 
 To be continued
