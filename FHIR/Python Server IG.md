@@ -6,6 +6,9 @@
 > 
 > http://genomics-advisor.smartplatforms.org/ (DSTU2)
 
+Source code of the server will be at:
+https://github.com/LXander/FHIR-Genomics_v2/tree/wy
+
 If you have any question about this guide, contact at:
 <span id="Email"></span>
 
@@ -41,8 +44,8 @@ If you have any question about this guide, contact at:
 
 
 ----------
- <span id = "#Chapter1"><h3>[Tutorial of Usage](#Content)</h3></span>
- <span id = "#Chapter1.1"><h4>[Preliminary Environment Configuration](#Content)</h4></span> 
+ <span id = "Chapter1"><h3>[Tutorial of Usage](#Content)</h3></span>
+ <span id = "Chapter1.1"><h4>[Preliminary Environment Configuration](#Content)</h4></span> 
 
 This server cannot run on Windows environment due to the pysam package. The following steps(including later part) are all tested on linux **Ubuntu** only.
 
