@@ -164,6 +164,7 @@ So we need to get **cookies** first, here is the workflow to get cookies:
 *	Then at REDIRECT_URI page, the app needs to get access_token, which is used as **cookies**. The cookie will remain for 30 minutes due to server's configuration.
 
 This might be little tricky. Here is the sample code :
+
 ```python
 #auth. py
 from flask import redirect, request
